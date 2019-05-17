@@ -1,0 +1,52 @@
+.movie{
+    border-radius:10px;
+    box-shadow:0px 5px 20px rgb(71,71,71);
+    margin:20px;
+    display:flex;
+    flex-direction: column;
+    justify-content: space-around;
+    background:white;
+    align-items:center;
+    min-width:40%;
+    width:33%;
+    padding-bottom:5px;
+}
+.image {
+    border-radius:50%;
+    width:200px;
+    height:200px;
+}
+.button {
+    background:none;
+    cursor:pointer;
+    margin-top:2em;
+    border-radius:2px;
+    color:white;
+    padding:7px 10px;
+    font-size:12px;
+    background-color:lightcoral;
+    text-transform:uppercase;
+    border:none;
+}
+.modal {
+    position: relative;
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    width: 100%;
+    pointer-events: auto;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: 0.3rem;
+    outline: 0;
+
+}
+.modal_body {
+    text-align:center;
+}
+.modal_paragraph {
+    margin-top:10px;
+    margin-bottom:0;
+}
