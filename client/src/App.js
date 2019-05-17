@@ -25,12 +25,11 @@ const App = () => {
     );
     const dataGenres = await responseGenres.json();
     setData(dataGenres);
-    console.log(dataGenres)
   };
   const getMovies = async () => {
     if(movies !== undefined) {
       const response = await fetch(
-      `/api/movies?query=${search}`
+      `http://localhost:5000/api/movies?search=${search}`
       );
       const data = await response.json();
       if (data.results !== undefined) { // testing the return value of the API call, if empty then set movies to an empty array
@@ -68,6 +67,9 @@ const App = () => {
         />
         <button className="search-button" type="submit">
           Search
+        </button>
+        <button className="add-movie-button" type="submit">
+          Add a movie
         </button>
       </form>
       <div className="movies-class">
