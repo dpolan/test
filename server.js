@@ -35,19 +35,25 @@ const isEmpty = obj => {
 
 app.get("/api/movies", (req,res) => {
     let movieQuery = req.query.search;
-    console.log(movieQuery)
     if (movieQuery !== undefined) {
         var Movie = mongoose.model(movieQuery, movieSchema);
-        console.log(Movie)
-        let queryMongo = Movie.find({title: movieQuery}, function(obj) {  });
+        let queryMongo = Movie.find({title: movieQuery}, function(obj) { console.log(obj); });
         if(isEmpty(queryMongo)) {
-            console.log('ok')
             // return it res.json()
         }
         else {
             return axios.get(`https://api.themoviedb.org/3/search/movie?api_key=${APP_KEY}&query=${movieQuery}`)
             .then(result => {
-                return res.status(200).send(result.data)
+                const data = result.data.results.sort((a, b) => {
+                    a.title.localeCompare(b.title)
+                });
+                // data.slice(0,10).map((item) => {
+                //     item.save((err) => {
+                //         if (err) return console.error(err);
+                //         console.log( " saved to db collection."); 
+                //     });
+                // })
+                return res.status(200).send(data.slice(0, 10))
             }) 
             .catch(err => {
                 return res.status(500).json(err)
@@ -56,6 +62,9 @@ app.get("/api/movies", (req,res) => {
     }
 })
 
+app.post('/add-movie',(req,res) => {
+    
+});
 
 // connect to DB
 mongoose.connect('mongodb://lorisW:loris1999@cluster0-y8cg5.mongodb.net/test?retryWrites=true',
