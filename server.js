@@ -1,11 +1,13 @@
 const express = require('express');
-const cors = require('cors')
+const cors = require('cors');
+const axios = require('axios')
 const app = express();
 const APP_KEY = "4c15b40ed5d5289859ad7836af15d25e";
 const mongoose= require('mongoose');
 const port = process.env.PORT || 5000;
 
 app.use(cors());
+
 
 var Schema = mongoose.Schema;
 
@@ -19,25 +21,33 @@ var movieSchema = new Schema({
   vote_count: Number
 });
 
-app.get("/api/movies", async (req,res) => {
-    let query = req.query.search;
-    var Movie = mongoose.model(query, movieSchema);
-    let queryMongo = Movie.find({title: query}, function(obj) { console.log(obj); });
-    if(!isEmpty(queryMongo)) {
-        // return it res.json()
+const isEmpty = obj => {
+    for(var prop in obj) {
+      if(obj.hasOwnProperty(prop))
+        return false;
     }
-    else {
-        const response = await fetch(
-            `https://api.themoviedb.org/3/search/movie?api_key=${APP_KEY}&query=${query}`
-            );
-            const data = await response.json();
-            const dataModel = mongoose.model(data, movieSchema);
-            dataModel.save(function(err, movie) {
-                if(err) {
-                    return console.error(err);
-                }
-                console.log(movie.title + " saved to movie collection."); 
+    return true;
+  }
+
+app.get("/api/movies", (req,res) => {
+    let query = req.query.search;
+    console.log(req.query)
+    if (query !== undefined) {
+        var Movie = mongoose.model(query, movieSchema);
+        let queryMongo = Movie.find({title: "the mask"}, function(obj) { console.log(obj); });
+        if(!isEmpty(queryMongo)) {
+            // return it res.json()
+        }
+        else {
+            return axios.get(`https://api.themoviedb.org/3/search/movie?api_key=${APP_KEY}&query=${query}`)
+            .then(result => {
+                console.log(result);
+                return res.status(200).send("")
+            }) 
+            .catch(err => {
+                return res.status(500).json(err)
             });
+        }
     }
 })
 
