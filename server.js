@@ -47,31 +47,41 @@ app.get("/api/movies", (req,res) => {
                 const data = result.data.results.sort((a, b) => {
                     a.title.localeCompare(b.title)
                 });
-                data.slice(0,10).map((item) => {
-                    const post = new post({
-                        title:  item.title,
-                        id: item.id,
-                        overview:   item.overview,
-                        poster_path : item.poster_path,
-                        release_date: item.release_date,
-                        genre_ids: item.genre_ids,
-                        vote_average: item.vote_average,
-                        vote_count: item.vote_count
-                    })
-                    post.save()
-                    .then(data => {
-                        res.json(data);
-                    })
-                    .catch(err => {
-                        res.json( {message: err });
-                    })
-                //     const movieItem = mongoose.model(item, movieSchema)
-                //     movieItem.save((err) => {
-                //         if (err) return console.error(err);
-                //         console.log( " saved to db collection."); 
-                //     });
-                 })
-                return res.status(200).send(data.slice(0, 10))
+                // issue with that
+                // console.log(data)
+                // const toPromises = data.slice(0,10).map((item) => {
+                //     const post = new post({
+                //         title:  item.title,
+                //         id: item.id,
+                //         overview:   item.overview,
+                //         poster_path : item.poster_path,
+                //         release_date: item.release_date,
+                //         genre_ids: item.genre_ids,
+                //         vote_average: item.vote_average,
+                //         vote_count: item.vote_count
+                //     })
+                //     post.save()
+                //     .then(data => {
+                //         return data;
+                //     })
+                //     .catch(err => {
+                //         res.json( {message: err });
+                //     })
+                //  })
+
+                // .then(results=>{
+                // Promise.all(toPromises)
+                //     console.log(results)
+                // }).catch(errors => {
+                //     console.log(errors)
+                // })
+                // //     const movieItem = mongoose.model(item, movieSchema)
+                // //     movieItem.save((err) => {
+                // //         if (err) return console.error(err);
+                // //         console.log( " saved to db collection."); 
+                // //     });
+                //  //})
+                res.status(200).send(data.slice(0, 10))
             }) 
             .catch(err => {
                 return res.status(500).json(err)
