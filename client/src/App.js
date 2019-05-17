@@ -30,7 +30,7 @@ const App = () => {
   const getMovies = async () => {
     if(movies !== undefined) {
       const response = await fetch(
-      `localhost:5000/api/movies?query=${search}`
+      `/api/movies?query=${search}`
       );
       const data = await response.json();
       if (data.results !== undefined) { // testing the return value of the API call, if empty then set movies to an empty array
