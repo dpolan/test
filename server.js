@@ -7,7 +7,11 @@ const mongoose= require('mongoose');
 const port = process.env.PORT || 5000;
 
 app.use(cors());
-
+app.use((req, res, next) => {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    next();
+  });
 
 var Schema = mongoose.Schema;
 
@@ -30,19 +34,20 @@ const isEmpty = obj => {
   }
 
 app.get("/api/movies", (req,res) => {
-    let query = req.query.search;
-    console.log(req.query)
-    if (query !== undefined) {
-        var Movie = mongoose.model(query, movieSchema);
-        let queryMongo = Movie.find({title: "the mask"}, function(obj) { console.log(obj); });
-        if(!isEmpty(queryMongo)) {
+    let movieQuery = req.query.search;
+    console.log(movieQuery)
+    if (movieQuery !== undefined) {
+        var Movie = mongoose.model(movieQuery, movieSchema);
+        console.log(Movie)
+        let queryMongo = Movie.find({title: movieQuery}, function(obj) {  });
+        if(isEmpty(queryMongo)) {
+            console.log('ok')
             // return it res.json()
         }
         else {
-            return axios.get(`https://api.themoviedb.org/3/search/movie?api_key=${APP_KEY}&query=${query}`)
+            return axios.get(`https://api.themoviedb.org/3/search/movie?api_key=${APP_KEY}&query=${movieQuery}`)
             .then(result => {
-                console.log(result);
-                return res.status(200).send("")
+                return res.status(200).send(result.data)
             }) 
             .catch(err => {
                 return res.status(500).json(err)
