@@ -11,11 +11,11 @@ app.use((req, res, next) => {
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     next();
-  });
+});
 
 app.get('/', (req,res) => {
     res.send('home')
-})
+});
 
 const movieSchema = new mongoose.Schema({
   title:  String,
@@ -27,6 +27,7 @@ const movieSchema = new mongoose.Schema({
   vote_average: Number,
   vote_count: Number
 });
+
 const Movie = mongoose.model('Movie', movieSchema);
 const isEmpty = obj => {
     for(var prop in obj) {
@@ -36,47 +37,87 @@ const isEmpty = obj => {
     return true;
   }
 
+// Search a movie
 app.get("/api/movies", async (req,res) => {
     let movieQuery = req.query.search;
     if (movieQuery !== undefined) {
-        console.log('d')
-        console.log(movieQuery)
-        let queryMongo = await Movie.find({title: movieQuery});
-        console.log(queryMongo)
-        console.log('ok')
+        const queryMongo = await Movie.find({title: movieQuery});
         if(isEmpty(queryMongo)) {
-            // return it res.json()
-            res.status(200).json(queryMongo)
+            return res.status(200).json(queryMongo)
         }
         else {
-            conso.log('ddd')
             return axios.get(`https://api.themoviedb.org/3/search/movie?api_key=${APP_KEY}&query=${movieQuery}`)
             .then(async result => {
                 const data = result.data.results.sort((a, b) => {
                     a.title.localeCompare(b.title)
                 });
-
+                
                 const getNewPost = (item) => new Movie(item);
-
+               
                 const movies = data.slice(0, 10).map(getNewPost);
+                //console.log( Movie.insertMany(movies))
                 const results = await Movie.insertMany(movies)
                 console.log(results)
-                res.status(200).json(result)
+                return res.status(200).json(result)
             }) 
             .catch(err => {
                 return res.status(500).json(err)
             });
         }
     }
-})
-
-app.post('/add-movie',(req,res) => {
-
 });
 
+// Add a movie
+app.post('/api/movies', async (req,res) => {
+    const newMovie = new Movie({
+        title:  req.body.title,
+        id: req.body.id,
+        overview:   req.body.overview,
+        poster_path : req.body.poster_path,
+        release_date: req.body.release_date,
+        genre_ids: req.body.genre_ids,
+        vote_average: req.body.vote_average,
+        vote_count: req.body.vote_count
+    });
+    try {
+        const savedMovie = await newMovie.save();
+        res.json(savedMovie);
+    } catch(err) {
+        res.json(err);
+    }
+});
 
-app.get("/api/movies/:id", (req,res) => {
-    console.log(req.params.id, 'ok')
+// Get a movie by a parameter
+app.get("/api/movies/:id", async (req,res) => {
+    try {
+        const post = await Movie.findById(req.params.id);
+        res.json(post);
+    } catch(err) {
+        res.json({ message: err});
+    }
+});
+
+// Delete a movie
+app.delete('api/movies/:id', async (req,res) => {
+    try {
+        const removedMovie = await Movie.remove({ title: req.params.id});
+        res.json(removedMovie);
+    } catch(err) {
+        res.json({ message: err});
+    }
+});
+
+// Update a movie
+app.put('api/movies/:id', async (req,res) => {
+    try {
+        const updatedMovie = await Movie.updateOne(
+            { id: req.params.id },
+            { $set: { title: req.body.title }} 
+            );
+        res.json(updatedMovie);
+    } catch(err) {
+        res.json({ message: err});
+    }
 });
 
 // connect to DB
