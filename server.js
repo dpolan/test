@@ -36,17 +36,22 @@ const isEmpty = obj => {
     return true;
   }
 
-app.get("/api/movies", (req,res) => {
+app.get("/api/movies", async (req,res) => {
     let movieQuery = req.query.search;
     if (movieQuery !== undefined) {
-        const Movie = mongoose.model(movieQuery, movieSchema);
-        let queryMongo = Movie.find({title: movieQuery}, function(obj) { console.log(obj); });
+        console.log('d')
+        console.log(movieQuery)
+        let queryMongo = await Movie.find({title: movieQuery});
+        console.log(queryMongo)
+        console.log('ok')
         if(isEmpty(queryMongo)) {
             // return it res.json()
+            res.status(200).json(queryMongo)
         }
         else {
+            conso.log('ddd')
             return axios.get(`https://api.themoviedb.org/3/search/movie?api_key=${APP_KEY}&query=${movieQuery}`)
-            .then(result => {
+            .then(async result => {
                 const data = result.data.results.sort((a, b) => {
                     a.title.localeCompare(b.title)
                 });
@@ -54,8 +59,9 @@ app.get("/api/movies", (req,res) => {
                 const getNewPost = (item) => new Movie(item);
 
                 const movies = data.slice(0, 10).map(getNewPost);
-                Movie.insertMany(movies)
-                res.status(200).json(movies)
+                const results = await Movie.insertMany(movies)
+                console.log(results)
+                res.status(200).json(result)
             }) 
             .catch(err => {
                 return res.status(500).json(err)
