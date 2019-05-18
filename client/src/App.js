@@ -32,8 +32,9 @@ const App = () => {
       `http://localhost:5000/api/movies?search=${search}`
       );
       const data = await response.json();
-      if (data.results !== undefined) { // testing the return value of the API call, if empty then set movies to an empty array
-        setMovies(data.results);
+      console.log(data)
+      if (data !== undefined) { // testing the return value of the API call, if empty then set movies to an empty array
+        setMovies(data);
       } else {
         setMovies([]);
       }
