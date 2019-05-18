@@ -17,18 +17,18 @@
   "scripts": {
     "start": "node server.js",
     "server": "nodemon server.js",
-    "client": "npm start --prefix assessment-wooclap",
+    "client": "npm start --prefix test",
     "dev": "concurrently \"npm run client\" \"npm run server\""
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/lwintjen/assessment-wooclap.git"
+    "url": "git+https://github.com/lwintjen/test.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/lwintjen/assessment-wooclap/issues"
+    "url": "https://github.com/lwintjen/test/issues"
   },
-  "homepage": "https://github.com/lwintjen/assessment-wooclap#readme",
+  "homepage": "https://github.com/lwintjen/test#readme",
   "description": ""
 }
