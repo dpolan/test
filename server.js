@@ -38,16 +38,21 @@ const isEmpty = obj => {
   }
 
 // Search a movie
-app.get("/api/movies", async (req,res) => {
+app.get("/api/movies",  (req,res) => {
     let movieQuery = req.query.search;
     if (movieQuery !== undefined) {
-        const queryMongo = await Movie.find({title: movieQuery});
-        if(isEmpty(queryMongo)) {
+        const queryMongo =  Movie.find({title: movieQuery})
+        .then(
+            (MovieData) => console.log(MovieData)
+        ).catch(err => {
+            console.log(err)
+        })
+        if(!isEmpty(queryMongo)) {
             return res.status(200).json(queryMongo)
         }
         else {
             return axios.get(`https://api.themoviedb.org/3/search/movie?api_key=${APP_KEY}&query=${movieQuery}`)
-            .then(async result => {
+            .then(result => {
                 const data = result.data.results.sort((a, b) => {
                     a.title.localeCompare(b.title)
                 });
@@ -55,13 +60,14 @@ app.get("/api/movies", async (req,res) => {
                 const getNewPost = (item) => new Movie(item);
                
                 const movies = data.slice(0, 10).map(getNewPost);
-                //console.log( Movie.insertMany(movies))
-                const results = await Movie.insertMany(movies)
-                console.log(results)
-                return res.status(200).json(result)
+            
+                //const results = Movie.insertMany(movies)
+
+                
+                res.status(200).json(movies)
             }) 
             .catch(err => {
-                return res.status(500).json(err)
+                res.status(500).json(err)
             });
         }
     }
